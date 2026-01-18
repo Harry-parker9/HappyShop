@@ -27,7 +27,6 @@ public class CustomerModel {
 
     private Product theProduct =null; // product found from search
     private ArrayList<Product> trolley =  new ArrayList<>(); // a list of products in trolley
-
     // Four UI elements to be passed to CustomerView for display updates.
     private String imageName = "imageHolder.jpg";                // Image to show in product preview (Search Page)
     private String displayLaSearchResult = "No Product was searched yet"; // Label showing search result message (Search Page)
@@ -67,10 +66,28 @@ public class CustomerModel {
 
             // trolley.add(theProduct) — Product is appended to the end of the trolley.
             // To keep the trolley organized, add code here or call a method that:
-            //TODO
             // 1. Merges items with the same product ID (combining their quantities).
             // 2. Sorts the products in the trolley by product ID.
-            trolley.add(theProduct);
+            
+            // Check if the product already exists
+            boolean found = false;
+            for(Product p : trolley){
+                if(p.getProductId().equals(theProduct.getProductId())){
+                    // If so, merge quantities
+                    p.setOrderedQuantity(p.getOrderedQuantity() + theProduct.getOrderedQuantity());
+                    found = true;
+                    break;
+                }
+            }
+            
+            // If not found, add new product
+            if(!found){
+                trolley.add(theProduct);
+            }
+            
+            // Sort items in trolly by product ID
+            trolley.sort((p1, p2) -> p1.getProductId().compareTo(p2.getProductId()));
+            
             displayTaTrolley = ProductListFormatter.buildString(trolley); //build a String for trolley so that we can show it
         }
         else{
