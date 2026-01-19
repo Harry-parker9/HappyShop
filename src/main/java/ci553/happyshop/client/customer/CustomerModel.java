@@ -61,18 +61,18 @@ public class CustomerModel {
         updateView();
     }
 
-    void addToTrolley(){
-        if(theProduct!= null){
+    void addToTrolley() {
+        if (theProduct != null) {
 
             // trolley.add(theProduct) — Product is appended to the end of the trolley.
             // To keep the trolley organized, add code here or call a method that:
             // 1. Merges items with the same product ID (combining their quantities).
             // 2. Sorts the products in the trolley by product ID.
-            
+
             // Check if the product already exists
             boolean found = false;
-            for(Product p : trolley){
-                if(p.getProductId().equals(theProduct.getProductId())){
+            for (Product p : trolley) {
+                if (p.getProductId().equals(theProduct.getProductId())) {
                     // If so, merge quantities
                     p.setOrderedQuantity(p.getOrderedQuantity() + theProduct.getOrderedQuantity());
                     found = true;
@@ -81,14 +81,15 @@ public class CustomerModel {
             }
 
             // If not found, add new product
-                trolley.add(theProduct);
-            }
-            
+            trolley.add(theProduct);
+
+
             // Sort items in trolly by product ID
             trolley.sort((p1, p2) -> p1.getProductId().compareTo(p2.getProductId()));
-            
+
             displayTaTrolley = ProductListFormatter.buildString(trolley); //build a String for trolley so that we can show it
         }
+
         else{
             displayLaSearchResult = "Please search for an available product before adding it to the trolley";
             System.out.println("must search and get an available product before add to trolley");
