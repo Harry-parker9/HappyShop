@@ -79,9 +79,8 @@ public class CustomerModel {
                     break;
                 }
             }
-            
+
             // If not found, add new product
-            if(!found){
                 trolley.add(theProduct);
             }
             
