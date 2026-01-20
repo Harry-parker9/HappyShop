@@ -73,15 +73,18 @@ public class CustomerModel {
             boolean found = false;
             for (Product p : trolley) {
                 if (p.getProductId().equals(theProduct.getProductId())) {
-                    // If so, merge quantities
-                    p.setOrderedQuantity(p.getOrderedQuantity() + theProduct.getOrderedQuantity());
+                    // If so, increment quantity by 1
+                    p.setOrderedQuantity(p.getOrderedQuantity() + 1);
                     found = true;
                     break;
                 }
             }
 
-            // If not found, add new product
-            trolley.add(theProduct);
+            // If not found, add new product with quantity 1
+            if (!found) {
+                theProduct.setOrderedQuantity(1);
+                trolley.add(theProduct);
+            }
 
 
             // Sort items in trolly by product ID
