@@ -37,27 +37,49 @@ public class CustomerModel {
     //SELECT productID, description, image, unitPrice,inStock quantity
     void search() throws SQLException {
         String productId = cusView.tfId.getText().trim();
-        if(!productId.isEmpty()){
-            theProduct = databaseRW.searchByProductId(productId); //search database
-            if(theProduct != null && theProduct.getStockQuantity()>0){
-                double unitPrice = theProduct.getUnitPrice();
-                String description = theProduct.getProductDescription();
-                int stock = theProduct.getStockQuantity();
+        String productName = cusView.tfName.getText().trim();
 
-                String baseInfo = String.format("Product_Id: %s\n%s,\nPrice: £%.2f", productId, description, unitPrice);
-                String quantityInfo = stock < 100 ? String.format("\n%d units left.", stock) : "";
-                displayLaSearchResult = baseInfo + quantityInfo;
-                System.out.println(displayLaSearchResult);
+        // Determine which search term to use (prefer ID if both are provided)
+        String keyword;
+        if (!productId.isEmpty()) {
+            keyword = productId;
+        } else {
+            keyword = productName;
+        }
+
+        if(!keyword.isEmpty()){
+            ArrayList<Product> results = databaseRW.searchProduct(keyword); //search database by ID or name
+
+            // If multiple products found (name search result), take the first one
+            if(!results.isEmpty()){
+                theProduct = results.get(0);
+
+                if(theProduct.getStockQuantity()>0){
+                    double unitPrice = theProduct.getUnitPrice();
+                    String description = theProduct.getProductDescription();
+                    String actualId = theProduct.getProductId();
+                    int stock = theProduct.getStockQuantity();
+
+                    String baseInfo = String.format("Product_Id: %s\n%s,\nPrice: £%.2f", actualId, description, unitPrice);
+                    String quantityInfo = stock < 100 ? String.format("\n%d units left.", stock) : "";
+                    displayLaSearchResult = baseInfo + quantityInfo;
+                    System.out.println(displayLaSearchResult);
+                }
+                else{
+                    theProduct=null;
+                    displayLaSearchResult = "Product found but out of stock";
+                    System.out.println("Product found but out of stock");
+                }
             }
             else{
                 theProduct=null;
-                displayLaSearchResult = "No Product was found with ID " + productId;
-                System.out.println("No Product was found with ID " + productId);
+                displayLaSearchResult = "No Product was found with keyword: " + keyword;
+                System.out.println("No Product was found with keyword: " + keyword);
             }
         }else{
             theProduct=null;
-            displayLaSearchResult = "Please type ProductID";
-            System.out.println("Please type ProductID.");
+            displayLaSearchResult = "Please type Product ID or Name";
+            System.out.println("Please type Product ID or Name.");
         }
         updateView();
     }

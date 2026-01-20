@@ -89,7 +89,7 @@ public class CustomerView  {
         Label laName = new Label("Name:");
         laName.setStyle(UIStyle.labelStyle);
         tfName = new TextField();
-        tfName.setPromptText("implement it if you want");
+        tfName.setPromptText("eg. TV");
         tfName.setStyle(UIStyle.textFiledStyle);
         HBox hbName = new HBox(10, laName, tfName);
 
