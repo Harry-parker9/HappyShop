@@ -24,6 +24,7 @@ public class CustomerModel {
     public CustomerView cusView;
     public DatabaseRW databaseRW; //Interface type, not specific implementation
                                   //Benefits: Flexibility: Easily change the database implementation.
+    public RemoveProductNotifier removeProductNotifier; // Notifier for insufficient stock
 
     private Product theProduct =null; // product found from search
     private ArrayList<Product> trolley =  new ArrayList<>(); // a list of products in trolley
@@ -124,6 +125,11 @@ public class CustomerModel {
                         ProductListFormatter.buildString(theOrder.getProductList())
                 );
                 System.out.println(displayTaReceipt);
+
+                // Close notifier window if showing from previous checkout attempt
+                if(removeProductNotifier != null) {
+                    removeProductNotifier.closeNotifierWindow();
+                }
             }
             else{ // Some products have insufficient stock — build an error message to inform the customer
                 StringBuilder errorMsg = new StringBuilder();
@@ -135,13 +141,24 @@ public class CustomerModel {
                 }
                 theProduct=null;
 
-                //TODO
-                // Add the following logic here:
-                // 1. Remove products with insufficient stock from the trolley.
-                // 2. Trigger a message window to notify the customer about the insufficient stock, rather than directly changing displayLaSearchResult.
-                //You can use the provided RemoveProductNotifier class and its showRemovalMsg method for this purpose.
-                //remember close the message window where appropriate (using method closeNotifierWindow() of RemoveProductNotifier class)
-                displayLaSearchResult = "Checkout failed due to insufficient stock for the following products:\n" + errorMsg.toString();
+                // Remove products with insufficient stock from the trolley
+                trolley.removeIf(product -> {
+                    for(Product insufficientProd : insufficientProducts) {
+                        if(product.getProductId().equals(insufficientProd.getProductId())) {
+                            return true;
+                        }
+                    }
+                    return false;
+                });
+
+                // Update trolley display
+                displayTaTrolley = ProductListFormatter.buildString(trolley);
+
+                // Show notification window with removal message
+                if(removeProductNotifier != null) {
+                    removeProductNotifier.showRemovalMsg(errorMsg.toString());
+                }
+
                 System.out.println("stock is not enough");
             }
         }
@@ -175,6 +192,12 @@ public class CustomerModel {
     void cancel(){
         trolley.clear();
         displayTaTrolley="";
+
+        // Close notifier window if showing
+        if(removeProductNotifier != null) {
+            removeProductNotifier.closeNotifierWindow();
+        }
+
         updateView();
     }
     void closeReceipt(){
