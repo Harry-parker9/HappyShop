@@ -213,6 +213,40 @@ public class CustomerModel {
         return new ArrayList<>(grouped.values());
     }
 
+    void removeFromTrolley() {
+        if (theProduct != null) {
+            //check if product is in trolley
+            Product productInTrolley = null;
+            for (Product p : trolley) {
+                if (p.getProductId().equals(theProduct.getProductId())) {
+                    productInTrolley = p;
+                    break;
+                }
+            }
+
+            if (productInTrolley != null) {
+                //if product is in trolley, decrease quantity by 1, if it has a quantity greater than 1
+                if (productInTrolley.getOrderedQuantity() > 1) {
+                    productInTrolley.setOrderedQuantity(productInTrolley.getOrderedQuantity() - 1);
+                    System.out.println("Decreased quantity of " + theProduct.getProductId() + " to " + productInTrolley.getOrderedQuantity());
+                } else {
+                    // if the quantity is only 1, remove it from trolley
+                    trolley.remove(productInTrolley);
+                    System.out.println("Removed " + theProduct.getProductId() + " from trolley");
+                }
+                displayTaTrolley = ProductListFormatter.buildString(trolley); //update trolley display
+            } else {
+                //if product is not in trolley yet and user tries to decrease quantity
+                System.out.println("Item isn't in trolley yet");
+            }
+        //if nothing is 'selected' in the search bar
+        } else {
+            System.out.println("Please search for a product first");
+        }
+        displayTaReceipt=""; //clear receipt to show trolley page
+        updateView();
+    }
+
     void cancel(){
         trolley.clear();
         displayTaTrolley="";

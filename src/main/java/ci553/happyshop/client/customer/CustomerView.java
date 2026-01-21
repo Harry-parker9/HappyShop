@@ -16,6 +16,8 @@ import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 
 /**
@@ -93,14 +95,36 @@ public class CustomerView  {
         tfName.setStyle(UIStyle.textFiledStyle);
         HBox hbName = new HBox(10, laName, tfName);
 
-        Label laPlaceHolder = new Label(  " ".repeat(15)); //create left-side spacing so that this HBox aligns with others in the layout.
+        Label laPlaceHolder = new Label(  " ".repeat(15));
         Button btnSearch = new Button("Search");
+        Button btnPlus = new Button();
+        Button btnMinus = new Button();
         btnSearch.setStyle(UIStyle.buttonStyle);
         btnSearch.setOnAction(this::buttonClicked);
-        Button btnAddToTrolley = new Button("Add to Trolley");
-        btnAddToTrolley.setStyle(UIStyle.buttonStyle);
-        btnAddToTrolley.setOnAction(this::buttonClicked);
-        HBox hbBtns = new HBox(10, laPlaceHolder,btnSearch, btnAddToTrolley);
+
+        // Plus button to add item to trolley
+        Path plusImagePath = Paths.get("images/plus.png").toAbsolutePath(); //create path and covert to an absolute path
+        ImageView ivPlus = new ImageView(new Image(plusImagePath.toUri().toString())); //use URL string to load image file and create it
+        ivPlus.setFitWidth(20);
+        ivPlus.setFitHeight(20);
+        btnPlus.setGraphic(ivPlus); //set the button as the buttons graphic
+        btnPlus.setPrefSize(35, 35); //make the button slightly larger than the image to make it look consistent with other buttons
+        btnPlus.setId("btnPlus"); //set ID to identify button
+        btnPlus.setOnAction(this::buttonClicked);
+
+        // Minus button to remove item from trolley
+        Path minusImagePath = Paths.get("images/minus.png").toAbsolutePath();
+        ImageView ivMinus = new ImageView(new Image(minusImagePath.toUri().toString()));
+        ivMinus.setFitWidth(20);
+        ivMinus.setFitHeight(20);
+        btnMinus.setGraphic(ivMinus);
+        btnMinus.setPrefSize(35, 35);
+        btnMinus.setId("btnMinus");
+        btnMinus.setOnAction(this::buttonClicked);
+
+        //create a horizontal box containing the three buttons, with spacing of 10 pixels between each one
+        //laPlaceHolder is 15 characters of empty space which lines up all the boxes into roughly the center of the window
+        HBox hbBtns = new HBox(10, laPlaceHolder, btnSearch, btnPlus, btnMinus);
 
         ivProduct = new ImageView("imageHolder.jpg");
         ivProduct.setFitHeight(60);
@@ -175,9 +199,17 @@ public class CustomerView  {
         try{
             Button btn = (Button)event.getSource();
             String action = btn.getText();
-            if(action.equals("Add to Trolley")){
-                showTrolleyOrReceiptPage(vbTrolleyPage); //ensure trolleyPage shows if the last customer did not close their receiptPage
+            String buttonId = btn.getId();
+
+            // Handle image buttons by ID
+            if(buttonId != null && buttonId.equals("btnPlus")){
+                action = "Add to Trolley";
+                showTrolleyOrReceiptPage(vbTrolleyPage);
             }
+            if(buttonId != null && buttonId.equals("btnMinus")){
+                action = "Remove from Trolley";
+            }
+
             if(action.equals("OK & Close")){
                 showTrolleyOrReceiptPage(vbTrolleyPage);
             }
